@@ -1,21 +1,21 @@
 # Go Longest Common Subsequence (LCS)
 
-[![GoDoc](https://godoc.org/github.com/yudai/golcs?status.svg)][godoc]
+[![GoDoc](https://godoc.org/github.com/WKBae/golcs?status.svg)][godoc]
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg)][license]
 
-[godoc]: https://godoc.org/github.com/yudai/golcs
-[license]: https://github.com/yudai/golcs/blob/master/LICENSE
+[godoc]: https://godoc.org/github.com/WKBae/golcs
+[license]: https://github.com/WKBae/golcs/blob/master/LICENSE
 
 A package to calculate [LCS](http://en.wikipedia.org/wiki/Longest_common_subsequence_problem) of slices.
 
 ## Usage
 
 ```sh
-go get github.com/yudai/golcs
+go get github.com/WKBae/golcs
 ```
 
 ```go
-import " github.com/yudai/golcs"
+import " github.com/WKBae/golcs"
 
 left = []interface{}{1, 2, 5, 3, 1, 1, 5, 8, 3}
 right = []interface{}{1, 2, 3, 3, 4, 4, 5, 1, 6}
