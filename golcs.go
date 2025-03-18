@@ -9,9 +9,13 @@ import (
 
 // Lcs is the interface to calculate the LCS of two arrays.
 type Lcs[Slice ~[]E, E any] interface {
+	// Table calculates the table of LCS values.
+	Table() (table [][]int)
+	// TableContext is a context aware version of Table()
+	TableContext(ctx context.Context) (table [][]int, err error)
 	// Values calculates the LCS value of the two arrays.
 	Values() (values Slice)
-	// ValueContext is a context aware version of Values()
+	// ValuesContext is a context aware version of Values()
 	ValuesContext(ctx context.Context) (values Slice, err error)
 	// IndexPairs calculates paris of indices which have the same value in LCS.
 	IndexPairs() (pairs []IndexPair)
@@ -59,7 +63,7 @@ func (lcs *lcs[Slice, E]) Table() (table [][]int) {
 	return table
 }
 
-// Table implements Lcs.TableContext()
+// TableContext implements Lcs.TableContext()
 func (lcs *lcs[Slice, E]) TableContext(ctx context.Context) (table [][]int, err error) {
 	if lcs.table != nil {
 		return lcs.table, nil
@@ -93,13 +97,13 @@ func (lcs *lcs[Slice, E]) TableContext(ctx context.Context) (table [][]int, err 
 	return table, nil
 }
 
-// Table implements Lcs.Length()
+// Length implements Lcs.Length()
 func (lcs *lcs[Slice, E]) Length() (length int) {
 	length, _ = lcs.LengthContext(context.Background())
 	return length
 }
 
-// Table implements Lcs.LengthContext()
+// LengthContext implements Lcs.LengthContext()
 func (lcs *lcs[Slice, E]) LengthContext(ctx context.Context) (length int, err error) {
 	table, err := lcs.TableContext(ctx)
 	if err != nil {
@@ -108,13 +112,13 @@ func (lcs *lcs[Slice, E]) LengthContext(ctx context.Context) (length int, err er
 	return table[len(lcs.left)][len(lcs.right)], nil
 }
 
-// Table implements Lcs.IndexPairs()
+// IndexPairs implements Lcs.IndexPairs()
 func (lcs *lcs[Slice, E]) IndexPairs() (pairs []IndexPair) {
 	pairs, _ = lcs.IndexPairsContext(context.Background())
 	return pairs
 }
 
-// Table implements Lcs.IndexPairsContext()
+// IndexPairsContext implements Lcs.IndexPairsContext()
 func (lcs *lcs[Slice, E]) IndexPairsContext(ctx context.Context) (pairs []IndexPair, err error) {
 	if lcs.indexPairs != nil {
 		return lcs.indexPairs, nil
@@ -146,13 +150,13 @@ func (lcs *lcs[Slice, E]) IndexPairsContext(ctx context.Context) (pairs []IndexP
 	return pairs, nil
 }
 
-// Table implements Lcs.Values()
+// Values implements Lcs.Values()
 func (lcs *lcs[Slice, E]) Values() (values Slice) {
 	values, _ = lcs.ValuesContext(context.Background())
 	return values
 }
 
-// Table implements Lcs.ValuesContext()
+// ValuesContext implements Lcs.ValuesContext()
 func (lcs *lcs[Slice, E]) ValuesContext(ctx context.Context) (values Slice, err error) {
 	if lcs.values != nil {
 		return lcs.values, nil
@@ -172,13 +176,13 @@ func (lcs *lcs[Slice, E]) ValuesContext(ctx context.Context) (values Slice, err 
 	return values, nil
 }
 
-// Table implements Lcs.Left()
+// Left implements Lcs.Left()
 func (lcs *lcs[Slice, E]) Left() (leftValues Slice) {
 	leftValues = lcs.left
 	return
 }
 
-// Table implements Lcs.Right()
+// Right implements Lcs.Right()
 func (lcs *lcs[Slice, E]) Right() (rightValues Slice) {
 	rightValues = lcs.right
 	return
