@@ -15,23 +15,39 @@ type IndexPair struct {
 
 // Lcs is the type to calculate the LCS of two arrays.
 type Lcs[Slice ~[]E, E any] struct {
-	left  Slice
-	right Slice
+	left   Slice
+	right  Slice
+	equals func(E, E) bool
 	/* for caching */
 	table      [][]int
 	indexPairs []IndexPair
 	values     Slice
 }
 
-// New creates a new LCS calculator from two arrays.
-func New[Slice ~[]E, E any](left, right Slice) *Lcs[Slice, E] {
+// NewFunc creates a new LCS calculator from two arrays, with custom equality function.
+func NewFunc[Slice ~[]E, E any](left, right Slice, equals func(E, E) bool) *Lcs[Slice, E] {
 	return &Lcs[Slice, E]{
 		left:       left,
 		right:      right,
+		equals:     equals,
 		table:      nil,
 		indexPairs: nil,
 		values:     nil,
 	}
+}
+
+// New creates a new LCS calculator from two arrays.
+func New[Slice ~[]E, E any](left, right Slice) *Lcs[Slice, E] {
+	return NewFunc(left, right, func(a, b E) bool {
+		return reflect.DeepEqual(a, b)
+	})
+}
+
+// NewComparable creates a new LCS calculator from two arrays with comparable elements.
+func NewComparable[Slice ~[]E, E comparable](left, right Slice) *Lcs[Slice, E] {
+	return NewFunc(left, right, func(a, b E) bool {
+		return a == b
+	})
 }
 
 // Table calculates the table of LCS values.
@@ -63,7 +79,7 @@ func (lcs *Lcs[Slice, E]) TableContext(ctx context.Context) (table [][]int, err 
 		}
 		for x := 1; x < sizeX; x++ {
 			increment := 0
-			if reflect.DeepEqual(lcs.left[x-1], lcs.right[y-1]) {
+			if lcs.equals(lcs.left[x-1], lcs.right[y-1]) {
 				increment = 1
 			}
 			table[x][y] = max(table[x-1][y-1]+increment, table[x-1][y], table[x][y-1])
@@ -109,7 +125,7 @@ func (lcs *Lcs[Slice, E]) IndexPairsContext(ctx context.Context) (pairs []IndexP
 	pairs = make([]IndexPair, table[len(table)-1][len(table[0])-1])
 
 	for x, y := len(lcs.left), len(lcs.right); x > 0 && y > 0; {
-		if reflect.DeepEqual(lcs.left[x-1], lcs.right[y-1]) {
+		if lcs.equals(lcs.left[x-1], lcs.right[y-1]) {
 			pairs[table[x][y]-1] = IndexPair{Left: x - 1, Right: y - 1}
 			x--
 			y--
