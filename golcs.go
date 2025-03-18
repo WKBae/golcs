@@ -1,4 +1,4 @@
-// package lcs provides functions to calculate Longest Common Subsequence (LCS)
+// Package lcs provides functions to calculate Longest Common Subsequence (LCS)
 // values from two arbitrary arrays.
 package lcs
 
@@ -7,37 +7,14 @@ import (
 	"reflect"
 )
 
-// Lcs is the interface to calculate the LCS of two arrays.
-type Lcs[Slice ~[]E, E any] interface {
-	// Table calculates the table of LCS values.
-	Table() (table [][]int)
-	// TableContext is a context aware version of Table()
-	TableContext(ctx context.Context) (table [][]int, err error)
-	// Values calculates the LCS value of the two arrays.
-	Values() (values Slice)
-	// ValuesContext is a context aware version of Values()
-	ValuesContext(ctx context.Context) (values Slice, err error)
-	// IndexPairs calculates paris of indices which have the same value in LCS.
-	IndexPairs() (pairs []IndexPair)
-	// IndexPairsContext is a context aware version of IndexPairs()
-	IndexPairsContext(ctx context.Context) (pairs []IndexPair, err error)
-	// Length calculates the length of the LCS.
-	Length() (length int)
-	// LengthContext is a context aware version of Length()
-	LengthContext(ctx context.Context) (length int, err error)
-	// Left returns one of the two arrays to be compared.
-	Left() (leftValues Slice)
-	// Right returns the other of the two arrays to be compared.
-	Right() (righttValues Slice)
-}
-
 // IndexPair represents an pair of indeices in the Left and Right arrays found in the LCS value.
 type IndexPair struct {
 	Left  int
 	Right int
 }
 
-type lcs[Slice ~[]E, E any] struct {
+// Lcs is the type to calculate the LCS of two arrays.
+type Lcs[Slice ~[]E, E any] struct {
 	left  Slice
 	right Slice
 	/* for caching */
@@ -47,8 +24,8 @@ type lcs[Slice ~[]E, E any] struct {
 }
 
 // New creates a new LCS calculator from two arrays.
-func New[Slice ~[]E, E any](left, right Slice) Lcs[Slice, E] {
-	return &lcs[Slice, E]{
+func New[Slice ~[]E, E any](left, right Slice) *Lcs[Slice, E] {
+	return &Lcs[Slice, E]{
 		left:       left,
 		right:      right,
 		table:      nil,
@@ -57,14 +34,14 @@ func New[Slice ~[]E, E any](left, right Slice) Lcs[Slice, E] {
 	}
 }
 
-// Table implements Lcs.Table()
-func (lcs *lcs[Slice, E]) Table() (table [][]int) {
+// Table calculates the table of LCS values.
+func (lcs *Lcs[Slice, E]) Table() (table [][]int) {
 	table, _ = lcs.TableContext(context.Background())
 	return table
 }
 
-// TableContext implements Lcs.TableContext()
-func (lcs *lcs[Slice, E]) TableContext(ctx context.Context) (table [][]int, err error) {
+// TableContext is a context aware version of Table()
+func (lcs *Lcs[Slice, E]) TableContext(ctx context.Context) (table [][]int, err error) {
 	if lcs.table != nil {
 		return lcs.table, nil
 	}
@@ -97,14 +74,14 @@ func (lcs *lcs[Slice, E]) TableContext(ctx context.Context) (table [][]int, err 
 	return table, nil
 }
 
-// Length implements Lcs.Length()
-func (lcs *lcs[Slice, E]) Length() (length int) {
+// Length calculates the length of the LCS.
+func (lcs *Lcs[Slice, E]) Length() (length int) {
 	length, _ = lcs.LengthContext(context.Background())
 	return length
 }
 
-// LengthContext implements Lcs.LengthContext()
-func (lcs *lcs[Slice, E]) LengthContext(ctx context.Context) (length int, err error) {
+// LengthContext is a context aware version of Length()
+func (lcs *Lcs[Slice, E]) LengthContext(ctx context.Context) (length int, err error) {
 	table, err := lcs.TableContext(ctx)
 	if err != nil {
 		return 0, err
@@ -112,14 +89,14 @@ func (lcs *lcs[Slice, E]) LengthContext(ctx context.Context) (length int, err er
 	return table[len(lcs.left)][len(lcs.right)], nil
 }
 
-// IndexPairs implements Lcs.IndexPairs()
-func (lcs *lcs[Slice, E]) IndexPairs() (pairs []IndexPair) {
+// IndexPairs calculates paris of indices which have the same value in LCS.
+func (lcs *Lcs[Slice, E]) IndexPairs() (pairs []IndexPair) {
 	pairs, _ = lcs.IndexPairsContext(context.Background())
 	return pairs
 }
 
-// IndexPairsContext implements Lcs.IndexPairsContext()
-func (lcs *lcs[Slice, E]) IndexPairsContext(ctx context.Context) (pairs []IndexPair, err error) {
+// IndexPairsContext is a context aware version of IndexPairs()
+func (lcs *Lcs[Slice, E]) IndexPairsContext(ctx context.Context) (pairs []IndexPair, err error) {
 	if lcs.indexPairs != nil {
 		return lcs.indexPairs, nil
 	}
@@ -150,14 +127,14 @@ func (lcs *lcs[Slice, E]) IndexPairsContext(ctx context.Context) (pairs []IndexP
 	return pairs, nil
 }
 
-// Values implements Lcs.Values()
-func (lcs *lcs[Slice, E]) Values() (values Slice) {
+// Values calculates the LCS value of the two arrays.
+func (lcs *Lcs[Slice, E]) Values() (values Slice) {
 	values, _ = lcs.ValuesContext(context.Background())
 	return values
 }
 
-// ValuesContext implements Lcs.ValuesContext()
-func (lcs *lcs[Slice, E]) ValuesContext(ctx context.Context) (values Slice, err error) {
+// ValuesContext is a context aware version of Values()
+func (lcs *Lcs[Slice, E]) ValuesContext(ctx context.Context) (values Slice, err error) {
 	if lcs.values != nil {
 		return lcs.values, nil
 	}
@@ -176,14 +153,14 @@ func (lcs *lcs[Slice, E]) ValuesContext(ctx context.Context) (values Slice, err 
 	return values, nil
 }
 
-// Left implements Lcs.Left()
-func (lcs *lcs[Slice, E]) Left() (leftValues Slice) {
+// Left returns one of the two arrays to be compared.
+func (lcs *Lcs[Slice, E]) Left() (leftValues Slice) {
 	leftValues = lcs.left
 	return
 }
 
-// Right implements Lcs.Right()
-func (lcs *lcs[Slice, E]) Right() (rightValues Slice) {
+// Right returns the other of the two arrays to be compared.
+func (lcs *Lcs[Slice, E]) Right() (rightValues Slice) {
 	rightValues = lcs.right
 	return
 }
